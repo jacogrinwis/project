@@ -17,15 +17,17 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
-        $tags = Tag::all();
-        $products = Product::all();
+        // $categories = Category::all();
+        // $tags = Tag::all();
+        // $products = Product::orderBy('id', 'desc')->paginate(10);
+        $products = Product::orderBy('id', 'desc')->with(['categories', 'tags'])->paginate(10);
 
-        return view('admin.products.index', compact([
-            'categories',
-            'tags',
-            'products',
-        ]));
+        // return view('admin.products.index', compact([
+        //     'categories',
+        //     'tags',
+        //     'products',
+        // ]));
+        return view('admin.products.index', compact('products'));
     }
 
     /**
@@ -35,7 +37,10 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('admin.products.create');
+        $categories = Category::all();
+        $tags = Tag::all();
+
+        return view('admin.products.create', compact('categories', 'tags'));
     }
 
     /**
@@ -46,7 +51,28 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // dd($request);
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'price' => 'required',
+            'description' => 'max:255',
+            'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
+        ]);
+
+        $image_path = $request->file('image')->store('image', 'public');
+
+        $product = Product::create([
+            'name' => $request->name,
+            'slug' => str()->slug($request->name),
+            'price' => $request->price,
+            'description' => $request->description,
+            'image' => $image_path,
+        ]);
+
+        $product->categories()->attach($request->categories);
+        $product->tags()->attach($request->tags);
+
+        return redirect()->route('admin.products.index');
     }
 
     /**

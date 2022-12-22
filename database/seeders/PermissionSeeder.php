@@ -23,42 +23,42 @@ class PermissionSeeder extends Seeder
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // create permissions
-        Permission::create(['name' => 'create products']);
-        Permission::create(['name' => 'edit products']);
-        Permission::create(['name' => 'delete products']);
-        Permission::create(['name' => 'publish products']);
-        Permission::create(['name' => 'unpublish products']);
+        Permission::create(['name' => 'Create Products']);
+        Permission::create(['name' => 'Edit Products']);
+        Permission::create(['name' => 'Delete Products']);
+        Permission::create(['name' => 'Publish Products']);
+        Permission::create(['name' => 'Unpublish Products']);
 
         // create roles and assign existing permissions
-        $roleUser = Role::create(['name' => 'user']);
+        $roleUser = Role::create(['name' => 'User']);
 
-        $roleModerator = Role::create(['name' => 'moderator']);
-        $roleModerator->givePermissionTo(['publish products']);
-        $roleModerator->givePermissionTo(['unpublish products']);
+        $roleModerator = Role::create(['name' => 'Moderator']);
+        $roleModerator->givePermissionTo(['Publish Products']);
+        $roleModerator->givePermissionTo(['Unpublish Products']);
 
-        $rolePublisher = Role::create(['name' => 'publisher']);
-        $rolePublisher->givePermissionTo(['publish products']);
-        $rolePublisher->givePermissionTo(['unpublish products']);
+        $rolePublisher = Role::create(['name' => 'Publisher']);
+        $rolePublisher->givePermissionTo(['Publish Products']);
+        $rolePublisher->givePermissionTo(['Unpublish Products']);
 
         $roleWriter = Role::create(['name' => 'writer']);
-        $roleWriter->givePermissionTo(['create products']);
-        $roleWriter->givePermissionTo(['publish products']);
-        $roleWriter->givePermissionTo(['unpublish products']);
+        $roleWriter->givePermissionTo(['Create Products']);
+        $roleWriter->givePermissionTo(['Publish Products']);
+        $roleWriter->givePermissionTo(['Unpublish Products']);
 
-        $roleEditor = Role::create(['name' => 'editor']);
-        $roleEditor->givePermissionTo(['edit products']);
-        $roleEditor->givePermissionTo(['delete products']);
-        $roleEditor->givePermissionTo(['publish products']);
-        $roleEditor->givePermissionTo(['unpublish products']);
+        $roleEditor = Role::create(['name' => 'Editor']);
+        $roleEditor->givePermissionTo(['Edit Products']);
+        $roleEditor->givePermissionTo(['Delete Products']);
+        $roleEditor->givePermissionTo(['Publish Products']);
+        $roleEditor->givePermissionTo(['Unpublish Products']);
 
-        $roleAdmin = Role::create(['name' => 'admin']);
-        $roleAdmin->givePermissionTo(['create products']);
-        $roleAdmin->givePermissionTo(['edit products']);
-        $roleAdmin->givePermissionTo(['delete products']);
-        $roleAdmin->givePermissionTo(['publish products']);
-        $roleAdmin->givePermissionTo(['unpublish products']);
+        $roleAdmin = Role::create(['name' => 'Admin']);
+        $roleAdmin->givePermissionTo(['Create Products']);
+        $roleAdmin->givePermissionTo(['Edit Products']);
+        $roleAdmin->givePermissionTo(['Delete Products']);
+        $roleAdmin->givePermissionTo(['Publish Products']);
+        $roleAdmin->givePermissionTo(['Unpublish Products']);
 
-        $roleSuperAdmin = Role::create(['name' => 'super-admin']);
+        $roleSuperAdmin = Role::create(['name' => 'Super-Admin']);
         // gets all permissions via Gate::before rule; see AuthServiceProvider
 
         // create demo users
