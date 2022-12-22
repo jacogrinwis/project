@@ -36,7 +36,7 @@
 
     <x-admin.navigation.index />
 
-    <main {{ $attributes->merge(['class' => 'px-6 py-16 md:py-12 md:ml-64 xl:ml-80 max-w-7xl']) }}>
+    <main {{ $attributes->merge(['class' => 'px-6 py-16 md:pt-6 md:py-12 md:ml-64 max-w-7xl']) }}>
 
         @if (isset($header))
             <div class="flex justify-between items-center mb-4">

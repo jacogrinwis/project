@@ -1,4 +1,4 @@
-<x-admin-layout class="max-w-xl">
+<x-admin-layout>
 
     <x-slot name="header">
         <x-slot name="title">Tags</x-slot>
@@ -6,6 +6,7 @@
             Add Tag
         </a>
     </x-slot>
+    <div class="max-w-2xl mx-auto">
 
     <div class="overflow-x-auto relative border border-gray-200 dark:border-none sm:rounded-lg mb-6">
         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -57,5 +58,5 @@
             </tbody>
         </table>
     </div>
-
+</div>
 </x-admin-layout>
