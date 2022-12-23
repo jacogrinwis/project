@@ -21,12 +21,24 @@
         <x-input-error :messages="$errors->get('price')" class="mt-2" />
     </div>
     <div>
-        <label for="image" class="form-label block mb-2">Image</label>
-        <input type="file" name="image" id="image" class="file-input">
+        <div class="flex">
+            @isset($productImages)
+                @foreach ($product->productImages as $image)
+                <div class="text-center">
+                    <img src="{{ $image->url ? asset('product_images/' . $image->url) : asset('images/no-image.png') }}" alt="" class="h-40 w-40 rounded-lg">
+                    <a href="{{ route('admin.products.removeimage', $image->id) }}">Delete</a>
+                </div>
+
+                @endforeach
+            @endisset
+        </div>
+        <label for="images" class="form-label block mb-2">Images</label>
+        <input type="file" name="images[]" id="images" class="file-input" multiple>
+        <x-input-error :messages="$errors->get('images')" class="mt-2" />
     </div>
     <div>
         <label for="description" class="form-label block mb-2">Description</label>
-        <textarea name="description" id="description" class="textarea"></textarea>
+        <textarea name="description" id="description" class="textarea">{{ old('description') ?? ($product->description ?? '') }}</textarea>
         <x-input-error :messages="$errors->get('description')" class="mt-2" />
     </div>
     <div class="flex">
@@ -37,8 +49,8 @@
                     <input type="checkbox" name="categories[]" id="category-checkbox-{{ $category->id }}" class="checkbox-input"
                         value="{{ $category->id }}"
                         @isset($product)
-                    @if ($category->id == $product->categories->pluck('id')->first()) checked @endif
-                @endisset>
+                            {{ in_array($category->id, $product->categories->pluck('id')->toArray()) ? 'checked' : '' }}
+                        @endisset>
                     <x-input-label for="test" :value="$category->name" class="mb-0" />
                 </div>
             @endforeach
@@ -49,11 +61,9 @@
                 <div class="flex items-center">
                     <input type="checkbox" name="tags[]" id="tag-checkbox-{{ $tag->id }}" class="checkbox-input"
                         value="{{ $tag->id }}"
-                        @isset($user)
-                    @if ($tag->id == $product->tags->pluck('id')->first()) checked @endif
-                @else
-                    @if ($tag->name == 'User') checked @endif
-                @endisset>
+                        @isset($product)
+                            {{ in_array($tag->id, $product->tags->pluck('id')->toArray()) ? 'checked' : '' }}
+                        @endisset>
                     <x-input-label for="tags" :value="$tag->name" class="mb-0" />
                 </div>
             @endforeach

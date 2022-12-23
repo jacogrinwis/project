@@ -28,7 +28,11 @@
                             {{ $product->id }}
                         </td>
                         <td class="py-3 px-6">
-                            <img src="{{ $product->image ? asset('storage/' . $product->image) : asset('images/no-image.png') }}" alt="" class="h-16 w-16 rounded-lg">
+                            @foreach ($product->productImages as $image)
+                                @if ($loop->first)
+                                    <img src="{{ $image->url ? asset('product_images/' . $image->url) : asset('images/no-image.png') }}" alt="" class="h-16 w-16 rounded-lg">
+                                @endif
+                            @endforeach
                         </td>
                         <th class="py-3 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                             {{ $product->name }}

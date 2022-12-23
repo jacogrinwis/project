@@ -31,12 +31,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::resource('/categories', App\Http\Controllers\Admin\CategoryController::class);
-Route::resource('/pages', App\Http\Controllers\Admin\PageController::class);
-Route::resource('/posts', App\Http\Controllers\Admin\PostController::class);
-Route::resource('/products', App\Http\Controllers\Admin\ProductController::class);
-Route::resource('/roles', App\Http\Controllers\Admin\RoleController::class);
-Route::resource('/tags', App\Http\Controllers\Admin\TagController::class);
+// Route::resource('/categories', App\Http\Controllers\Admin\CategoryController::class);
+// Route::resource('/pages', App\Http\Controllers\Admin\PageController::class);
+// Route::resource('/posts', App\Http\Controllers\Admin\PostController::class);
+// Route::resource('/products', App\Http\Controllers\Admin\ProductController::class);
+// Route::resource('/roles', App\Http\Controllers\Admin\RoleController::class);
+// Route::resource('/tags', App\Http\Controllers\Admin\TagController::class);
 
 // Admin Routes
 Route::middleware(['role:Moderator|Publisher|Writer|Editor|Admin|Super-Admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -46,6 +46,9 @@ Route::middleware(['role:Moderator|Publisher|Writer|Editor|Admin|Super-Admin'])-
     Route::resource('/permissions', App\Http\Controllers\Admin\PermissionController::class);
     Route::resource('/posts', App\Http\Controllers\Admin\PostController::class);
     Route::resource('/products', App\Http\Controllers\Admin\ProductController::class);
+    Route::get('/products/removeimage/{product}', [App\Http\Controllers\Admin\ProductController::class, 'removeimage'])->name('products.removeimage');
+    // Route::resource('/product_images', App\Http\Controllers\Admin\ProductImageController::class);
+    Route::resource('/images', App\Http\Controllers\Admin\ImageController::class);
     Route::resource('/roles', App\Http\Controllers\Admin\RoleController::class);
     Route::resource('/settings', App\Http\Controllers\Admin\SettingController::class);
     Route::resource('/tags', App\Http\Controllers\Admin\TagController::class);

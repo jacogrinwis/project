@@ -9,7 +9,7 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'slug', 'price', 'description', 'image'];
+    protected $fillable = ['name', 'slug', 'price', 'description'];
 
     public function user()
     {
@@ -26,5 +26,10 @@ class Product extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class)->withTimestamps();
+    }
+
+    public function productImages()
+    {
+        return $this->hasMany(ProductImage::class);
     }
 }

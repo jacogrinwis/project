@@ -24,7 +24,7 @@ class ProductFactory extends Factory
             'slug' => Str::slug($name, '-'),
             'description' => $this->faker->paragraph(2),
             'price' => $this->faker->randomFloat(2, 0, 100),
-            'image' => fake()->imageUrl($width=400, $height=400),
+            //'image' => fake()->imageUrl($width=400, $height=400),
             'created_at' => now(),
             'updated_at' => now(),
         ];
