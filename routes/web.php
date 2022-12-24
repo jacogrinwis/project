@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CategoryController;
@@ -46,7 +47,7 @@ Route::middleware(['role:Moderator|Publisher|Writer|Editor|Admin|Super-Admin'])-
     Route::resource('/permissions', App\Http\Controllers\Admin\PermissionController::class);
     Route::resource('/posts', App\Http\Controllers\Admin\PostController::class);
     Route::resource('/products', App\Http\Controllers\Admin\ProductController::class);
-    Route::get('/products/removeimage/{product}', [App\Http\Controllers\Admin\ProductController::class, 'removeimage'])->name('products.removeimage');
+    Route::get('/products/remove-image/{pid}/{iid}', [App\Http\Controllers\Admin\ProductController::class, 'removeImage'])->name('products.remove-image');
     // Route::resource('/product_images', App\Http\Controllers\Admin\ProductImageController::class);
     Route::resource('/images', App\Http\Controllers\Admin\ImageController::class);
     Route::resource('/roles', App\Http\Controllers\Admin\RoleController::class);
@@ -56,3 +57,36 @@ Route::middleware(['role:Moderator|Publisher|Writer|Editor|Admin|Super-Admin'])-
 });
 
 require __DIR__.'/auth.php';
+
+
+// Clear application cache:
+Route::get('/clear-cache', function() {
+    Artisan::call('cache:clear');
+    return 'Application cache has been cleared';
+});
+
+//Clear route cache:
+Route::get('/route-cache', function() {
+	Artisan::call('route:cache');
+    return 'Routes cache has been cleared';
+});
+
+//Clear config cache:
+Route::get('/config-cache', function() {
+ 	Artisan::call('config:cache');
+ 	return 'Config cache has been cleared';
+});
+
+// Clear view cache:
+Route::get('/view-clear', function() {
+    Artisan::call('view:clear');
+    return 'View cache has been cleared';
+});
+
+Route::get('/clear-all', function() {
+    Artisan::call('cache:clear');
+    Artisan::call('route:cache');
+    Artisan::call('config:cache');
+    Artisan::call('view:clear');
+    return 'All caches has been cleared';
+});

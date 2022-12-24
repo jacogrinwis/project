@@ -21,21 +21,33 @@
         <x-input-error :messages="$errors->get('price')" class="mt-2" />
     </div>
     <div>
-        <div class="flex">
-            @isset($productImages)
-                @foreach ($product->productImages as $image)
-                <div class="text-center">
-                    <img src="{{ $image->url ? asset('product_images/' . $image->url) : asset('images/no-image.png') }}" alt="" class="h-40 w-40 rounded-lg">
-                    <a href="{{ route('admin.products.removeimage', $image->id) }}">Delete</a>
-                </div>
-
-                @endforeach
+        <label for="images" class="form-label block mb-2">
+            @isset($edit)
+                Add images
+            @else
+                Images
             @endisset
-        </div>
-        <label for="images" class="form-label block mb-2">Images</label>
-        <input type="file" name="images[]" id="images" class="file-input" multiple>
+        </label>
+        <input type="file" name="images[]" id="images" class="file-input"
+            accept="image/png, image/jpeg, image/jpg, image/gif, image/webp" multiple>
         <x-input-error :messages="$errors->get('images')" class="mt-2" />
     </div>
+    @if (isset($edit))
+        @if ($product->images)
+            <div class="flex gap-2">
+                @foreach ($product->images as $key => $image)
+                    <div class="relative">
+                        <img src="{{ $image ? asset('storage/product_images/' . $image) : asset('images/no-image.png') }}"
+                            alt="" class="h-32 w-32 rounded-lg border border-gray-600 shadow-md">
+                        <a href="{{ route('admin.products.remove-image', ['pid' => $product, 'iid' => $key]) }}"
+                            class="btn-red absolute top-2 right-2 py-1 px-2 rounded-full">
+                            <i class="bi bi-trash-fill"></i>
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+    @endif
     <div>
         <label for="description" class="form-label block mb-2">Description</label>
         <textarea name="description" id="description" class="textarea">{{ old('description') ?? ($product->description ?? '') }}</textarea>
@@ -46,8 +58,8 @@
             <x-input-label value="catgories" class="-mb-2" />
             @foreach ($categories as $category)
                 <div class="flex items-center">
-                    <input type="checkbox" name="categories[]" id="category-checkbox-{{ $category->id }}" class="checkbox-input"
-                        value="{{ $category->id }}"
+                    <input type="checkbox" name="categories[]" id="category-checkbox-{{ $category->id }}"
+                        class="checkbox-input" value="{{ $category->id }}"
                         @isset($product)
                             {{ in_array($category->id, $product->categories->pluck('id')->toArray()) ? 'checked' : '' }}
                         @endisset>

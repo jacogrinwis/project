@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
         $this->call(TagSeeder::class);
         $this->command->info('Tag Seeder created.');
 
-        $this->call(ProductSeeder::class);
-        $this->command->info('Product Seeder created.');
+        // $this->call(ProductSeeder::class);
+        // $this->command->info('Product Seeder created.');
     }
 }

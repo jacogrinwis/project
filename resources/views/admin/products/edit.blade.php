@@ -9,7 +9,7 @@
             <div class="max-w-xl">
                 <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data">
                     @method('PUT')
-                    <x-admin.products.form :product="$product" :categories="$categories" :tags="$tags" :productImages="$productImages" />
+                    <x-admin.products.form :product="$product" :categories="$categories" :tags="$tags" edit=true />
                 </form>
             </div>
         </div>

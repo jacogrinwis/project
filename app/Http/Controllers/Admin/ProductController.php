@@ -19,16 +19,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        // $categories = Category::all();
-        // $tags = Tag::all();
-        // $products = Product::orderBy('id', 'desc')->paginate(10);
         $products = Product::orderBy('id', 'desc')->with(['productImages', 'categories', 'tags'])->paginate(10);
-
-        // return view('admin.products.index', compact([
-        //     'categories',
-        //     'tags',
-        //     'products',
-        // ]));
         return view('admin.products.index', compact('products'));
     }
 
@@ -53,43 +44,30 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'price' => 'required',
-            'description' => 'max:255',
-            //'images' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
+            'price' => 'nullable',
+            'description' => 'nullable|max:255',
+            'images' => 'nullable|array',
         ]);
 
-        $product = Product::create([
-            'name' => $request->name,
-            'slug' => str()->slug($request->name),
-            'price' => $request->price,
-            'description' => $request->description,
-            //'images' => $image_path,
-        ]);
+        $data['slug'] = str()->slug($request->name);
 
+        if ($request->hasFile('images')) {
+            $images = [];
+
+            foreach ($data['images'] as $image) {
+                $filename = uniqid() . '.' . $image->getClientOriginalExtension();
+                $image->storeAs('product_images', $filename, 'public');
+                array_push($images, $filename);
+            }
+
+            $data['images'] = $images;
+        }
+
+        $product = Product::create($data);
         $product->categories()->attach($request->categories);
         $product->tags()->attach($request->tags);
-
-        if ($request->file('images')) {
-            foreach ($request->file('images') as $image) {
-                // $path = $image->store('image');
-
-
-
-                // $file = time() . '.' . $request->images->extension();
-                $file = time() . '.' . $image->extension();
-                // $request->images->move(public_path('product_images'), $file);
-                $image->move(public_path('product_images'), $file);
-
-
-
-                ProductImage::create([
-                    'url' => $file,
-                    'product_id' => $product->id,
-                ]);
-            }
-        }
 
         return redirect()->route('admin.products.index');
     }
@@ -113,14 +91,14 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $productImages = ProductImage::all();
+        // $productImages = ProductImage::all();
         $categories = Category::all();
         $tags = Tag::all();
 
         // $product = $product->with(['productImage', 'categories', 'tags']);
 
 
-        return view('admin.products.edit', compact(['product', 'productImages', 'categories', 'tags']));
+        return view('admin.products.edit', compact(['product', 'categories', 'tags']));
     }
 
     /**
@@ -132,60 +110,30 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        // $request->validate([
-        //     'name' => ['required', 'string', 'max:255'],
-        //     'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
-        // ]);
-
-        // $product->update([
-        //     'name' => $request->name,
-        //     'email' => $request->email,
-        // ]);
-        // $product->syncRoles($request->role);
-
-        // return redirect()->route('admin.users.index');
-
-        // if (!$image) abort(404);
-
-        // unlink(public_path('uploads/' . $image->image));
-
-        // foreach ($product->productImage())
-
-        $request->validate([
+        $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'price' => 'required',
             'description' => 'max:255',
-            //'images' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
+            'images' => 'nullable|array',
         ]);
 
-        $product->update([
-            'name' => $request->name,
-            'slug' => str()->slug($request->name),
-            'price' => $request->price,
-            'description' => $request->description,
-            //'images' => $image_path,
-        ]);
+        $data['slug'] = str()->slug($request->name);
+
+        if ($request->hasFile('images')) {
+            $product->images ? $images = $product->images : $images = [];
+
+            foreach ($data['images'] as $key => $image) {
+                $filename = uniqid() . '.' . $image->getClientOriginalExtension();
+                $image->storeAs('product_images', $filename, 'public');
+                array_push($images, $filename);
+            }
+
+            $data['images'] = $images;
+        }
 
         $product->categories()->sync($request->categories);
         $product->tags()->sync($request->tags);
-
-        foreach ($request->file('images') as $image) {
-
-
-
-            // $path = $image->store('image', 'public');
-
-
-            $file = time() . '.' . $image->extension();
-            $image->move(public_path('product_images'), $file);
-
-
-
-            $product->productImages()->update([
-                'url' => $file,
-                'product_id' => $product->id,
-            ]);
-        }
+        $product->update($data);
 
         return redirect()->route('admin.products.index');
     }
@@ -201,25 +149,44 @@ class ProductController extends Controller
         //
     }
 
-    public function removeImage($id)
+    public function removeImage($pid, $iid)
+    {
+        $product = Product::find($pid);
+        $image_array = $product->images;
+
+        $old_files = 'storage/product_images/' . $image_array[$iid];
+        unlink($old_files);
+
+        unset($image_array[$iid]);
+
+        $product->update(['images' => $image_array]);
+
+        return redirect()->route('admin.products.edit', $pid);
+    }
+
+    public function remove($id)
     {
         $image = ProductImage::find($id);
 
         if (!$image) abort(404);
 
-        unlink(public_path('uploads/' . $image->image));
+        $file = 'product_images/' . $image->filename;
+
+        unlink(public_path($file));
+
+        $image->delete();
 
         // if (!$image) abort(404);
 
-        // if (is_file($image->url)) {
+        // if (is_file($image->filename)) {
         //     return 'yes';
         // } else {
-        //     return 'no ' . storage_path($image->url) . '<br>' . public_path($image->url) . '<br>' . url('public/' . $image->url);
+        //     return 'no ' . storage_path($image->filename) . '<br>' . public_path($image->filename) . '<br>' . url('public/' . $image->filename);
         // }
 
-        // Storage::delete($image->url);
-        // unlink(storage_path($image->url));
+        // Storage::delete($image->filename);
+        // unlink(storage_path($image->filename));
 
-        // return back();
+        return back();
     }
 }
