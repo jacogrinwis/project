@@ -9,7 +9,7 @@ class Post extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'slug', 'body', 'user_id', 'category_id'];
+    protected $fillable = ['title', 'slug', 'cover', 'body'];
 
     public function user()
     {
@@ -26,5 +26,10 @@ class Post extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class)->withTimestamps();
+    }
+
+    public function postImages()
+    {
+        return $this->hasMany(PostImage::class);
     }
 }

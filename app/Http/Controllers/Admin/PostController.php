@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Tag;
 use App\Models\Post;
+use App\Models\Image;
 use App\Models\Category;
+use App\Models\PostImage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -17,15 +19,9 @@ class PostController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
-        $tags = Tag::all();
-        $posts = Post::all();
+        $posts = Post::orderBy('id', 'desc')->with(['categories', 'tags'])->paginate(10);
 
-        return view('admin.posts.index', compact([
-            'categories',
-            'tags',
-            'posts',
-        ]));
+        return view('admin.posts.index', compact('posts'));
     }
 
     /**
@@ -35,7 +31,10 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('admin.posts.create');
+        $categories = Category::all();
+        $tags = Tag::all();
+
+        return view('admin.posts.create', compact('categories','tags'));
     }
 
     /**
@@ -46,7 +45,41 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'body' => 'nullable|string',
+            // 'cover' => 'required|image',
+        ]);
+
+        if ($request->hasFile('cover')) {
+            $file = $request->file('cover');
+            $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(\public_path('posts/cover/'), $fileName);
+
+            $post = Post::create([
+                'title' => $request->title,
+                'slug' => str()->slug($request->title),
+                'cover' => $fileName,
+                'body' => $request->body,
+            ]);
+
+            $post->categories()->attach($request->categories);
+            $post->tags()->attach($request->tags);
+        }
+
+        if ($request->hasFile('images')) {
+            $files = $request->file('images');
+            foreach ($files as $file) {
+                $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+                $request['post_id'] = $post->id;
+                $request['image'] = $fileName;
+                $file->move(\public_path('posts/images/'), $fileName);
+                PostImage::create($request->all());
+            }
+        }
+
+        return redirect()->route('admin.posts.index');
+
     }
 
     /**

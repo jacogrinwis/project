@@ -21,7 +21,7 @@
         referrerpolicy="origin"></script>
     <script>
         tinymce.init({
-            selector: '#body',
+            selector: '#body2',
             skin: 'oxide-dark',
             plugins: 'lists code table codesample link',
             toolbar: 'formatselect | bold italic underline strikethrough bullist link',
@@ -39,7 +39,7 @@
     <main {{ $attributes->merge(['class' => 'px-6 py-16 md:pt-6 md:py-12 md:ml-64 max-w-7xl']) }}>
 
         @if (isset($header))
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center justify-between mb-4">
                 @if (isset($title))
                     <h2 class="text-2xl font-bold dark:text-white">
                         {{ $title }}

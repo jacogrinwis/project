@@ -19,8 +19,16 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::orderBy('id', 'desc')->with(['productImages', 'categories', 'tags'])->paginate(10);
+        $products = Product::orderBy('id', 'desc')->with(['categories', 'tags'])->paginate(10);
+
         return view('admin.products.index', compact('products'));
+
+
+        // return view('admin.products.index')
+        //     ->with('products', Product::orderBy('id', 'desc'))->paginate(10)
+        //     ->with(['categories', 'tags']);
+
+
     }
 
     /**
@@ -34,6 +42,12 @@ class ProductController extends Controller
         $tags = Tag::all();
 
         return view('admin.products.create', compact('categories', 'tags'));
+
+        // return view('admin.products.create')
+        //     ->with('categories', Category::all())
+        //     ->with('tags', Tag::all());
+
+
     }
 
     /**
