@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\PostImage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\File;
 
 class PostController extends Controller
 {
@@ -62,10 +63,10 @@ class PostController extends Controller
                 'cover' => $fileName,
                 'body' => $request->body,
             ]);
-
-            $post->categories()->attach($request->categories);
-            $post->tags()->attach($request->tags);
         }
+
+        $post->categories()->attach($request->categories);
+        $post->tags()->attach($request->tags);
 
         if ($request->hasFile('images')) {
             $files = $request->file('images');
@@ -101,7 +102,11 @@ class PostController extends Controller
      */
     public function edit($id)
     {
-        //
+        $post = Post::findOrFail($id); //->with(['categories', 'tags']);
+        $categories = Category::all();
+        $tags = Tag::all();
+
+        return view('admin.posts.edit', compact('post', 'categories', 'tags'));
     }
 
     /**
@@ -113,7 +118,41 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        dd($request);
+        $post = Post::findOrFail($id);
+
+        if ($request->hasFile('cover')) {
+            if (File::exists('posts/cover/'. $post->cover)) {
+                File::delete('posts/cover/'. $post->cover);
+            }
+            $file = $request->file('cover');
+            $post->cover = uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(\public_path('posts/cover/'), $post->cover);
+            $request['cover'] = $post->cover;
+        }
+
+        $post->update([
+            'title' => $request->title,
+            'slug' => str()->slug($request->title),
+            'cover' => $post->cover,
+            'body' => $request->body,
+        ]);
+
+        $post->categories()->attach($request->categories);
+        $post->tags()->attach($request->tags);
+
+        if ($request->hasFile('images')) {
+            $files = $request->file('images');
+            foreach ($files as $file) {
+                $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+                $request['post_id'] = $id;
+                $request['image'] = $fileName;
+                $file->move(\public_path('posts/images/'), $fileName);
+                PostImage::create($request->all());
+            }
+        }
+
+        return back();
     }
 
     /**
@@ -124,6 +163,57 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $post = Post::findOrFail($id);
+
+        if (File::exists('posts/cover/' . $post->cover)) {
+            File::delete('posts/cover/'. $post->cover);
+        }
+
+        $images = PostImage::where('post_id', $post->id)->get();
+        foreach ($images as $image) {
+            if (File::exists('posts/images/' . $image->image)) {
+                File::delete('posts/images/' . $image->image);
+            }
+        }
+
+        $post->delete();
+
+        return back();
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function delete_cover($id)
+    {
+        $cover = PostImage::findOrFail($id)->cover;
+
+        if (File::exists('posts/cover/'. $cover)) {
+            File::delete('posts/cover/'. $cover);
+        }
+
+        return back();
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function delete_image($id)
+    {
+        $image = PostImage::findOrFail($id);
+
+        if (File::exists('posts/images/'. $image->image)) {
+            File::delete('posts/images/'. $image->image);
+        }
+
+        PostImage::find($id)->delete();
+
+        return back();
     }
 }

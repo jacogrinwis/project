@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\PostImageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,9 +47,10 @@ Route::middleware(['role:Moderator|Publisher|Writer|Editor|Admin|Super-Admin'])-
     Route::resource('/pages', App\Http\Controllers\Admin\PageController::class);
     Route::resource('/permissions', App\Http\Controllers\Admin\PermissionController::class);
     Route::resource('/posts', App\Http\Controllers\Admin\PostController::class);
+    Route::delete('/posts/delete_cover/{id}', [App\Http\Controllers\Admin\PostController::class, 'delete_cover'])->name('posts.delete_cover');
+    Route::delete('/posts/delete_image/{id}', [App\Http\Controllers\Admin\PostController::class, 'delete_image'])->name('posts.delete_image');
     Route::resource('/products', App\Http\Controllers\Admin\ProductController::class);
     Route::get('/products/remove-image/{pid}/{iid}', [App\Http\Controllers\Admin\ProductController::class, 'removeImage'])->name('products.remove-image');
-    // Route::resource('/product_images', App\Http\Controllers\Admin\ProductImageController::class);
     Route::resource('/images', App\Http\Controllers\Admin\ImageController::class);
     Route::resource('/roles', App\Http\Controllers\Admin\RoleController::class);
     Route::resource('/settings', App\Http\Controllers\Admin\SettingController::class);
