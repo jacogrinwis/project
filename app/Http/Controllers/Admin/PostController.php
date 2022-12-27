@@ -35,7 +35,7 @@ class PostController extends Controller
         $categories = Category::all();
         $tags = Tag::all();
 
-        return view('admin.posts.create', compact('categories','tags'));
+        return view('admin.posts.create2', compact('categories','tags'));
     }
 
     /**
@@ -46,8 +46,11 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request);
+
         $request->validate([
             'title' => 'required|string|max:255',
+            'slug' => 'string',
             'body' => 'nullable|string',
             // 'cover' => 'required|image',
         ]);
@@ -58,8 +61,9 @@ class PostController extends Controller
             $file->move(\public_path('posts/cover/'), $fileName);
 
             $post = Post::create([
+                'published' => $request->published == 'published' ? 1 : 0,
                 'title' => $request->title,
-                'slug' => str()->slug($request->title),
+                'slug' => $request->slug, // str()->slug($request->title),
                 'cover' => $fileName,
                 'body' => $request->body,
             ]);
@@ -91,7 +95,7 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        //
+        return view('admin.posts.show');
     }
 
     /**
@@ -106,7 +110,7 @@ class PostController extends Controller
         $categories = Category::all();
         $tags = Tag::all();
 
-        return view('admin.posts.edit', compact('post', 'categories', 'tags'));
+        return view('admin.posts.edit2', compact('post', 'categories', 'tags'));
     }
 
     /**
@@ -118,7 +122,8 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        dd($request);
+        // dd($request);
+
         $post = Post::findOrFail($id);
 
         if ($request->hasFile('cover')) {
@@ -132,14 +137,15 @@ class PostController extends Controller
         }
 
         $post->update([
+            'published' => $request->published == 'published' ? 1 : 0,
             'title' => $request->title,
-            'slug' => str()->slug($request->title),
+            'slug' => $request->slug, // str()->slug($request->title),
             'cover' => $post->cover,
             'body' => $request->body,
         ]);
 
-        $post->categories()->attach($request->categories);
-        $post->tags()->attach($request->tags);
+        $post->categories()->sync($request->categories);
+        $post->tags()->sync($request->tags);
 
         if ($request->hasFile('images')) {
             $files = $request->file('images');
@@ -152,7 +158,7 @@ class PostController extends Controller
             }
         }
 
-        return back();
+        return redirect()->route('admin.posts.index');
     }
 
     /**
@@ -189,10 +195,30 @@ class PostController extends Controller
      */
     public function delete_cover($id)
     {
-        $cover = PostImage::findOrFail($id)->cover;
+        $post = Post::findOrFail($id);
 
-        if (File::exists('posts/cover/'. $cover)) {
-            File::delete('posts/cover/'. $cover);
+        if (File::exists('posts/cover/'. $post->cover)) {
+            File::delete('posts/cover/'. $post->cover);
+        }
+
+        $post->update([
+            'cover' => null,
+        ]);
+
+        return back();
+    }
+
+    public function upload_images(Request $request, $id)
+    {
+        if ($request->hasFile('images')) {
+            $files = $request->file('images');
+            foreach ($files as $file) {
+                $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+                $request['post_id'] = $id;
+                $request['image'] = $fileName;
+                $file->move(\public_path('posts/images/'), $fileName);
+                PostImage::create($request->all());
+            }
         }
 
         return back();
@@ -214,6 +240,6 @@ class PostController extends Controller
 
         PostImage::find($id)->delete();
 
-        return back();
+        return redirect()->route('admin.posts.index');
     }
 }

@@ -2,7 +2,7 @@
 
     <x-slot name="header">
         <x-slot name="title">Posts</x-slot>
-        <a href="{{ route('admin.posts.create') }}" class="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+        <a href="{{ route('admin.posts.create') }}" class="btn-primary">
             Add Post
         </a>
     </x-slot>
@@ -12,9 +12,11 @@
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                     <th class="w-1 px-6 py-3 text-right">#</th>
-                    <th class="px-6 py-3">Cover</th>
+                    <th class="px-6 py-3 text-center">Cover</th>
                     <th class="px-6 py-3">Name</th>
-                    <th class="px-6 py-3">Slug</th>
+                    <th class="px-6 py-3">Categories</th>
+                    <th class="px-6 py-3">Tags</th>
+                    <th class="px-6 py-3 text-center">Published</th>
                     <th class="px-6 py-3"><span class="sr-only">Action</span></th>
                 </tr>
             </thead>
@@ -26,13 +28,31 @@
                             {{ $post->id }}
                         </td>
                         <td class="px-6 py-3">
-                            <img src="{{ asset('posts/cover/' . $post->cover) }}" class="w-20 h-20 m-2 rounded-lg">
+                            <img src="{{ $post->cover ? asset('posts/cover/' . $post->cover) : asset('images/no-image.png') }}" class="w-20 h-20 m-2 rounded-lg shadow-xl">
                         </td>
                         <th class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                             {{ $post->title }}
                         </th>
                         <td class="px-6 py-3">
-                            {{ $post->slug }}
+                            @foreach ($post->categories as $category)
+                            <span
+                                    class="bg-gray-100 text-gray-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
+                                {{ $category->name }}
+                            </span>
+                            @endforeach
+                        </td>
+                        <td class="px-6 py-3">
+                            @foreach ($post->tags as $tag)
+                            <span
+                                    class="bg-gray-100 text-gray-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
+                                {{ $tag->name }}
+                            </span>
+                            @endforeach
+                        </td>
+                        <td class="px-6 py-3 text-center">
+                            <span class="{{ $post->published ? 'text-white' : 'text-gray-400' }}">
+                                <i class="{{ $post->published ? 'fa-sharp fa-solid fa-eye' : 'fa-sharp fa-solid fa-eye-slash' }}"></i>
+                            </span>
                         </td>
                         <td class="w-1 px-6 py-3 space-x-1 whitespace-nowrap">
                             <a href="{{ route('admin.posts.show', $post->id) }}" target="_blank"
