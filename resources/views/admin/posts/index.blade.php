@@ -12,11 +12,11 @@
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                     <th class="w-1 px-6 py-3 text-right">#</th>
-                    <th class="px-6 py-3 text-center">Cover</th>
+                    {{-- <th class="px-6 py-3 text-center">Cover</th> --}}
                     <th class="px-6 py-3">Name</th>
                     <th class="px-6 py-3">Categories</th>
                     <th class="px-6 py-3">Tags</th>
-                    <th class="px-6 py-3 text-center">Published</th>
+                    <th class="w-1 px-6 py-3 text-center">Published</th>
                     <th class="px-6 py-3"><span class="sr-only">Action</span></th>
                 </tr>
             </thead>
@@ -27,9 +27,9 @@
                         <td class="w-1 px-6 py-3">
                             {{ $post->id }}
                         </td>
-                        <td class="px-6 py-3">
-                            <img src="{{ $post->cover ? asset('posts/cover/' . $post->cover) : asset('images/no-image.png') }}" class="w-20 h-20 m-2 rounded-lg shadow-xl">
-                        </td>
+                        {{-- <td class="px-6 py-3 text-center">
+                            <img src="{{ $post->cover ? asset('posts/cover/' . $post->cover) : asset('images/no-image.png') }}" class="object-cover w-16 h-16 m-2 shadow-lg aspect-square outline outline-2 outline-white">
+                        </td> --}}
                         <th class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                             {{ $post->title }}
                         </th>
