@@ -7,7 +7,7 @@
         <form action="{{ route('admin.posts.destroy', $post->id) }}" method="POST" class="inline">
             @csrf
             @method('DELETE')
-            <button type="submit" class="btn-red">
+            <button type="submit" class="btn-red" onclick="confirm('Are you sure you want to delete this post?')">
                 <i class="mr-2 fa-solid fa-trash"></i>
                 Delete
             </button>
@@ -36,9 +36,12 @@
                         <div class="space-y-4">
                             @csrf
                             @method('PUT')
-                            <div>
+                            {{-- <div>
                                 <x-admin.toggle id="published" name="published" value="published" label="Published"
                                     checked="{{ $post->published ? true : false }}" />
+                            </div> --}}
+                            <div>
+                                <x-admin.toggle name="published" label="Published" :checked="$post->published" />
                             </div>
                             <div>
                                 <label for="title">Title</label>

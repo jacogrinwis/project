@@ -7,6 +7,13 @@
         </a>
     </x-slot>
 
+    @if (session()->has('success'))
+        <div class="p-4 mb-4 text-sm font-bold text-center text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
+            role="alert" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 2000)">
+            {{ session()->get('success') }}
+        </div>
+    @endif
+
     <div class="relative mb-6 overflow-x-auto border border-gray-200 dark:border-none sm:rounded-lg">
         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -35,23 +42,24 @@
                         </th>
                         <td class="px-6 py-3">
                             @foreach ($post->categories as $category)
-                            <span
+                                <span
                                     class="bg-gray-100 text-gray-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
-                                {{ $category->name }}
-                            </span>
+                                    {{ $category->name }}
+                                </span>
                             @endforeach
                         </td>
                         <td class="px-6 py-3">
                             @foreach ($post->tags as $tag)
-                            <span
+                                <span
                                     class="bg-gray-100 text-gray-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
-                                {{ $tag->name }}
-                            </span>
+                                    {{ $tag->name }}
+                                </span>
                             @endforeach
                         </td>
                         <td class="px-6 py-3 text-center">
                             <span class="{{ $post->published ? 'text-white' : 'text-gray-400' }}">
-                                <i class="{{ $post->published ? 'fa-sharp fa-solid fa-eye' : 'fa-sharp fa-solid fa-eye-slash' }}"></i>
+                                <i
+                                    class="{{ $post->published ? 'fa-sharp fa-solid fa-eye' : 'fa-sharp fa-solid fa-eye-slash' }}"></i>
                             </span>
                         </td>
                         <td class="w-1 px-6 py-3 space-x-1 whitespace-nowrap">

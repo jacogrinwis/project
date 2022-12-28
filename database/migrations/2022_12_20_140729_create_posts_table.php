@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug');
             $table->text('cover')->nullable();
-            $table->longText('body');
+            $table->longText('body')->nullable();
             $table->timestamps();
         });
     }
