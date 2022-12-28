@@ -36,10 +36,6 @@
                         <div class="space-y-4">
                             @csrf
                             @method('PUT')
-                            {{-- <div>
-                                <x-admin.toggle id="published" name="published" value="published" label="Published"
-                                    checked="{{ $post->published ? true : false }}" />
-                            </div> --}}
                             <div>
                                 <x-admin.toggle name="published" label="Published" :checked="$post->published" />
                             </div>
@@ -101,7 +97,8 @@
                                 <div class="relative overflow-hidden shadow-lg outline outline-2 outline-white group">
                                     <img src="{{ $post->cover ? asset('posts/cover/' . $post->cover) : asset('images/no-image.png') }}"
                                         class="object-cover aspect-square group-hover:brightness-50">
-                                    <form id="delete_cover" action="{{ route('admin.posts.delete_cover', $post->id) }}"
+                                    {{-- <form id="delete_cover" action="{{ route('admin.posts.delete_cover', $post->id) }}" --}}
+                                    <form id="delete_cover" action="{{ route('admin.postcover.destroy', $post) }}"
                                         method="POST">
                                         @csrf
                                         @method('delete')
@@ -123,8 +120,10 @@
                                         class="relative overflow-hidden shadow-lg outline outline-2 outline-white group">
                                         <img src="{{ asset('posts/images/' . $image->image) }}"
                                             class="object-cover aspect-square group-hover:brightness-50">
-                                        <form id="delete_image"
-                                            action="{{ route('admin.posts.delete_image', $image->id) }}"
+                                        {{-- <form id="delete_image"
+                                            action="{{ route('admin.posts.delete_image', $image->id) }}" --}}
+                                            <form id="delete_image"
+                                            action="{{ route('admin.postimages.destroy', $image) }}"
                                             method="POST">
                                             @csrf
                                             @method('delete')
@@ -134,7 +133,6 @@
                                             </button>
                                         </form>
                                     </div>
-                                    </form>
                                 @endforeach
                             </div>
                         </div>

@@ -49,9 +49,11 @@ Route::middleware(['role:Moderator|Publisher|Writer|Editor|Admin|Super-Admin'])-
     Route::resource('/pages', App\Http\Controllers\Admin\PageController::class);
     Route::resource('/permissions', App\Http\Controllers\Admin\PermissionController::class);
     Route::resource('/posts', App\Http\Controllers\Admin\PostController::class);
+    Route::delete('/postcover/{post}', [App\Http\Controllers\Admin\PostCoverController::class, 'destroy'])->name('postcover.destroy');
+    Route::delete('/postimages/{postimage}', [App\Http\Controllers\Admin\PostImagesController::class, 'destroy'])->name('postimages.destroy');
     Route::put('/posts/upload_images/{id}', [App\Http\Controllers\Admin\PostController::class, 'upload_images'])->name('posts.upload_images');
-    Route::delete('/posts/delete_cover/{id}', [App\Http\Controllers\Admin\PostController::class, 'delete_cover'])->name('posts.delete_cover');
-    Route::delete('/posts/delete_image/{id}', [App\Http\Controllers\Admin\PostController::class, 'delete_image'])->name('posts.delete_image');
+    // Route::delete('/posts/delete_cover/{id}', [App\Http\Controllers\Admin\PostController::class, 'delete_cover'])->name('posts.delete_cover');
+    // Route::delete('/posts/delete_image/{id}', [App\Http\Controllers\Admin\PostController::class, 'delete_image'])->name('posts.delete_image');
     Route::resource('/products', App\Http\Controllers\Admin\ProductController::class);
     Route::get('/products/remove-image/{pid}/{iid}', [App\Http\Controllers\Admin\ProductController::class, 'removeImage'])->name('products.remove-image');
     // Route::resource('/images', App\Http\Controllers\Admin\ImageController::class);

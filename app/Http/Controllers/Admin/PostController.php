@@ -57,8 +57,8 @@ class PostController extends Controller
         }
 
         $post = Post::create($data);
-        $post->categories()->attach($data['categories']);
-        $post->tags()->attach($data['tags']);
+        $post->categories()->attach($request->categories);
+        $post->tags()->attach($request->tags);
 
         if ($request->hasFile('images')) {
             $files = $request->file('images');
@@ -143,9 +143,8 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Post $post)
     {
-        $post = Post::findOrFail($id);
         $categories = Category::all();
         $tags = Tag::all();
 
@@ -159,10 +158,10 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(CreatePostRequest $request, $id)
+    public function update(CreatePostRequest $request, Post $post)
     {
-        $post = Post::findOrFail($id);
         $data = $request->all();
+        $data['published'] = $request->boolean('published');
 
         if ($request->hasFile('cover')) {
             if (File::exists('posts/cover/' . $post->cover)) {
@@ -175,14 +174,14 @@ class PostController extends Controller
         }
 
         $post->update($data);
-        $post->categories()->sync($data['categories']);
-        $post->tags()->sync($data['tags']);
+        $post->categories()->sync($request->categories);
+        $post->tags()->sync($request->tags);
 
         if ($request->hasFile('images')) {
             $images = $request->file('images');
             foreach ($images as $image) {
                 $imageName = uniqid() . '.' . $image->getClientOriginalExtension();
-                $data['post_id'] = $id;
+                $data['post_id'] = $post->id;
                 $data['image'] = $imageName;
                 $image->move(public_path('posts/images/'), $imageName);
                 $post->postImages()->create($data);
@@ -249,10 +248,8 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Post $post)
     {
-        $post = Post::findOrFail($id);
-
         if (File::exists('posts/cover/' . $post->cover)) {
             File::delete('posts/cover/' . $post->cover);
         }
@@ -269,59 +266,23 @@ class PostController extends Controller
         return redirect()->route('admin.posts.index')->with('success', 'Post has successfully deleted!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function delete_cover($id)
-    {
-        $post = Post::findOrFail($id);
 
-        if (File::exists('posts/cover/' . $post->cover)) {
-            File::delete('posts/cover/' . $post->cover);
-        }
 
-        $post->update([
-            'cover' => null,
-        ]);
+    // public function upload_images(Request $request, $id)
+    // {
+    //     if ($request->hasFile('images')) {
+    //         $files = $request->file('images');
+    //         foreach ($files as $file) {
+    //             $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+    //             $request['post_id'] = $id;
+    //             $request['image'] = $fileName;
+    //             $file->move(\public_path('posts/images/'), $fileName);
+    //             PostImage::create($request->all());
+    //         }
+    //     }
 
-        return back();
-    }
+    //     return back();
+    // }
 
-    public function upload_images(Request $request, $id)
-    {
-        if ($request->hasFile('images')) {
-            $files = $request->file('images');
-            foreach ($files as $file) {
-                $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
-                $request['post_id'] = $id;
-                $request['image'] = $fileName;
-                $file->move(\public_path('posts/images/'), $fileName);
-                PostImage::create($request->all());
-            }
-        }
 
-        return back();
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function delete_image($id)
-    {
-        $image = PostImage::findOrFail($id);
-
-        if (File::exists('posts/images/' . $image->image)) {
-            File::delete('posts/images/' . $image->image);
-        }
-
-        PostImage::find($id)->delete();
-
-        return redirect()->route('admin.posts.index');
-    }
 }
