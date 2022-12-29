@@ -18,6 +18,11 @@ class Post extends Model
         ]);
     }
 
+    // public function getTitleAttribute($title)
+    // {
+    //     return strtoupper($title);
+    // }
+
     public function categories()
     {
         return $this->belongsToMany(Category::class)->withTimestamps();

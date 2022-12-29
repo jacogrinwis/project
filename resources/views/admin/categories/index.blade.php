@@ -1,14 +1,54 @@
 {{-- <x-admin-layout class="max-w-xl"> --}}
-    <x-admin-layout>
+<x-admin-layout x-data="{ open: false }">
 
     <x-slot name="header">
         <x-slot name="title">Categories</x-slot>
-        <a href="{{ route('admin.categories.create') }}" class="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+        {{-- <a href="{{ route('admin.categories.create') }}" class="btn-primary">
             Add Category
-        </a>
+        </a> --}}
+        <button class="btn-primary" x-on:click="open = ! open"><i class="mr-2 fa-sharp fa-solid fa-plus"></i>Add Category</button>
     </x-slot>
 
-    <div class="relative mb-6 overflow-x-auto border border-gray-200 dark:border-none sm:rounded-lg">
+    <div x-show="open" x-transition>
+        <form action="">
+            <label for="">New category</label>
+            <div class="flex gap-2 mb-6 lg:w-1/2 xl:w-1/3">
+                <input type="text" id="new_category" name="new_category" placeholder="Category name">
+                <button class="btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="custom-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Slug</th>
+                    <th><span class="sr-only">Action</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($categories as $category)
+                <tr>
+                    <td class="w-1">{{ $category->id }}</td>
+                    <th>{{ $category->name }}</th>
+                    <td>
+                        <x-admin.badge>{{ $category->slug }}</x-admin.badge>
+                    </td>
+                    <td class="w-1 space-x-1 whitespace-nowrap">
+                        <x-admin.btn-show :action="route('admin.categories.show', $category->id)" />
+                        <x-admin.btn-edit :action="route('admin.categories.edit', $category->id)" />
+                        <x-admin.btn-delete :action="route('admin.categories.destroy', $category->id)" confirm="Are you sure you want to delete this category?" />
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+    {{-- <div class="relative mb-6 overflow-x-auto border border-gray-200 dark:border-none sm:rounded-lg">
         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
@@ -29,7 +69,8 @@
                             {{ $category->name }}
                         </th>
                         <td class="px-6 py-3">
-                            <span class="bg-gray-100 text-gray-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
+                            <span
+                                class="bg-gray-100 text-gray-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
                                 {{ $category->slug }}
                             </span>
                         </td>
@@ -43,7 +84,8 @@
                                 role="button">
                                 <i class="bi bi-pencil-fill"></i>
                             </a>
-                            <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" class="inline">
+                            <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST"
+                                class="inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit"
@@ -57,6 +99,6 @@
                 @endforeach
             </tbody>
         </table>
-    </div>
+    </div> --}}
 
 </x-admin-layout>
